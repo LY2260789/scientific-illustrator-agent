@@ -1,142 +1,174 @@
-# scientific-illustrator-agent
+# Scientific Illustrator Agent
 
-通过 Python → Windows COM → `Illustrator.Application` → `DoJavaScript()` → ExtendScript 创建可编辑科研矢量图。
+**Editable scientific figures in Adobe Illustrator, driven by structured specifications.**
 
-**两种模式的基础渲染已在 Illustrator 2022 / 26.3.1 实测通过。** 包括 FigureSpec、基础布局、新文档矢量绘制、完整文本块检查、AI 保存和 PNG 预览。参考图示例有 1 个可编辑文本框，PM2.5 流程图有 8 个，多行标签保持一个文本对象。首次渲染曾发生崩溃，简化文字属性设置并由用户重启应用后，两次端到端测试均成功；确切崩溃原因尚未确定。已提供根目录 SKILL.md，可作为 CLI Skill 安装；MCP 和完整 Visual QC 尚未实现。详见 [两种输入模式与完整文本块规则](docs/input_modes.md)。
+Scientific Illustrator Agent connects AI agents to desktop Adobe Illustrator through Python, Windows COM and ExtendScript. An agent interprets a drawing request or reference image, creates a validated FigureSpec, and renders native vector objects with editable text.
+
+**Status: experimental v0.1 — installable CLI Skill.** The core renderer has been exercised on Illustrator 2022. An MCP server is planned and is not included in this release.
+
+## Capabilities
+
+| Capability | Current support |
+| --- | --- |
+| Natural-language workflow design | Agent creates FigureSpec; horizontal and vertical layout |
+| Simple reference reconstruction | Agent interprets image; normalized positions in FigureSpec |
+| Editable graphics | Rectangles, rounded rectangles, ellipses, text, lines and arrows |
+| Text integrity | One text block per label, including multiline labels; contents checked after rendering |
+| Object identification | Named objects and an exported registry |
+| Deliverables | Native AI document, PNG preview, specification and rendering trace |
+| Incremental construction | Low-level JSX support; generic speed-controlled CLI not yet available |
+| MCP, PDF/SVG export, automated visual QC | Planned |
+
+The Python CLI does not contain a language model or an OCR service. Image interpretation and specification authoring are performed by the host agent. Complex illustration reconstruction and recovery of original chart data are outside the current FigureSpec renderer's scope.
+
+## Architecture
+
+```mermaid
+flowchart TD
+    A[User idea or reference image] --> B[AI agent + Skill]
+    B --> C[FigureSpec JSON]
+    C --> D[Pydantic validation + layout]
+    D --> E[Python renderer]
+    E --> F[Windows COM]
+    F --> G[ExtendScript]
+    G --> H[Adobe Illustrator: editable vectors and text]
+    H --> I[AI document + PNG preview]
+```
+
+The intermediate specification keeps automatic workflow placement in the layout engine. COM serves as the bridge to Illustrator; reusable JSX performs document operations.
 
 ## Requirements
 
-- Windows 10/11，本机交互式桌面会话。
-- Adobe Illustrator 2020（24.x）或 2022（26.x），正常安装并完成首次启动。
-- Python 3.9+、pywin32。
-- 本机已实测 Illustrator **2022 / 26.3.1** 和 Python **3.9.13**。
-- 使用旧版 ExtendScript ES3 / 基础脚本 API；**尚未在 Illustrator 2020 实机验证**。不依赖 Adobe 新版 MCP。
+- Windows 10/11 with an interactive desktop session.
+- A licensed, locally installed Adobe Illustrator, with initial setup completed.
+- Python 3.9 or later, pywin32, Pydantic and Pillow.
+- An AI agent capable of reading this Skill and running local Python commands, when using natural-language input.
+
+**Verified environment:** Illustrator 2022 (26.3.1), Python 3.9.13. Compatibility with Illustrator 2020 is a design target, not a tested guarantee. This project does not depend on Adobe's newer MCP integrations.
 
 ## Installation
 
-在项目根目录的 PowerShell 中运行：
+### Python engine
 
 ```powershell
+git clone https://github.com/LY2260789/scientific-illustrator-agent.git
+cd scientific-illustrator-agent
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-python -m pip install -r requirements.txt
-```
-
-若 PowerShell 阻止激活，无需修改系统策略，直接执行：
-
-```powershell
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe examples/hello_illustrator.py
 ```
 
-命令行演示自行定位 `src`，不要求 editable install。需要在其他 Python 工程导入时可执行 `python -m pip install -e .`。后续 FigureSpec 使用 Pydantic（兼容 1.x 与 2.x 的 v1 API）；目前不需要 MCP SDK。
+### Agent Skill
 
-## Illustrator COM Test — Milestone 1
+The repository root contains [SKILL.md](SKILL.md) and its runtime resources. Install the **whole repository**, not only the Markdown file.
+
+In Codex, ask:
+
+> Install the Skill from https://github.com/LY2260789/scientific-illustrator-agent, using the repository root as the skill directory.
+
+For manual installation, place the repository contents in `~/.codex/skills/scientific-illustrator-agent/`, then install the Python dependencies there. Other agents need a compatible Skill loader and permission to execute local commands. This is not an MCP configuration; there is no MCP server command in v0.1.
+
+## Quick start
+
+Run the following from the repository root using the virtual environment created above.
+
+### Check Illustrator
 
 ```powershell
-python examples/hello_illustrator.py --connect-only
+.\.venv\Scripts\python.exe examples/hello_illustrator.py --connect-only
 ```
 
-预期输出（版本以本机为准）：
+Expected output includes the Illustrator version and `Illustrator connected successfully`. COM may launch Illustrator automatically; bringing its window to the foreground is not guaranteed.
+
+### Create a first document
+
+```powershell
+.\.venv\Scripts\python.exe examples/hello_illustrator.py --output outputs/hello.ai
+```
+
+Creates a new document with a blue rounded rectangle, editable text and a line, then saves an AI file.
+
+### Render a scientific workflow
+
+```powershell
+.\.venv\Scripts\python.exe examples/render_spec.py examples/specs/pm25_workflow.json --validate-only
+.\.venv\Scripts\python.exe examples/render_spec.py examples/specs/pm25_workflow.json --output outputs/workflow.ai
+```
+
+Use a new output name for subsequent runs: existing outputs are intentionally not overwritten.
+
+### Use natural language
+
+Example requests for an agent with this Skill installed:
+
+> Create a vertical workflow in Illustrator: data input, preprocessing, analysis, evaluation and results. Keep each label editable.
+
+> Reconstruct this simple reference diagram with editable shapes and one text frame per original text block.
+
+The agent should read the schema, write and validate a FigureSpec, render it, and inspect the PNG preview. See [input modes](docs/input_modes.md), [the schema](src/models/figure_spec.py), and [example specifications](examples/specs).
+
+## Outputs and document handling
+
+Each FigureSpec render produces:
+
+- `.ai`: native Illustrator document.
+- `.png`: preview exported from Illustrator.
+- `.spec.json`: the input specification.
+- `.registry.json`: observed object names, text counts and warnings.
+- `.jsx.log`: rendering trace for troubleshooting.
+
+Rendering creates a new document and checks text contents and object counts. It does not adopt the user's existing document for editing. There is no transactional rollback: a failed operation can leave a partial new document or partial output files for inspection. The renderer does not automatically close Illustrator or retry failed mutations.
+
+Reference artwork, private research examples, output files and runtime logs are excluded from this repository.
+
+## Development and validation
+
+```powershell
+.\.venv\Scripts\python.exe -m unittest discover -s tests
+```
+
+The current suite contains 14 offline tests covering the COM wrapper, specification validation and layout. Passing these tests does not verify the installed Illustrator runtime. Use the connection and rendering commands above for desktop integration checks.
 
 ```text
-Illustrator version: 26.3.1
-JSX version: 26.3.1
-Illustrator connected successfully
+SKILL.md              Agent workflow and operational guidance
+src/illustrator/      COM bridge, JSX builder and drawing scripts
+src/models/           FigureSpec validation
+src/layout/           Layout computation
+src/renderer/         Document rendering and output verification
+examples/             Connection demo and generic specifications
+tests/                Offline tests and manual connection entry point
+docs/                 Input modes and development notes
 ```
 
-该模式可启动 Illustrator，但不会创建或修改文档。COM 由系统 ProgID 决定使用哪个版本；多版本共存时必须检查打印的版本。
+## Troubleshooting
 
-新增核心文件：`src/illustrator/__init__.py`、`src/illustrator/com_client.py`，以及 `requirements.txt`、`pyproject.toml`、`.gitignore`、`.env.example`。失败时先看下面的 COM 排查说明。
-
-## Drawing Demo — Milestone 2
-
-```powershell
-python examples/hello_illustrator.py --debug
-```
-
-或指定尚不存在的路径：
-
-```powershell
-python examples/hello_illustrator.py --output "outputs/科研绘图测试.ai" --debug
-```
-
-预期 Illustrator 行为：
-
-1. 新建 520 × 300 pt RGB 文档。
-2. 创建 `SCI_DEMO` 图层。
-3. 创建蓝色圆角矩形 `SCI_NODE_hello`。
-4. 创建白色可编辑文字 `Scientific Illustrator Agent`，命名 `SCI_TEXT_hello`。
-5. 创建 1 pt 蓝色线条 `SCI_EDGE_hello`。
-6. 检查图层有 3 个对象，保存到 `outputs/hello_illustrator_<时间戳>.ai`，保留文档打开供检查。
-
-新增文件：`examples/hello_illustrator.py`、`src/illustrator/jsx/hello.jsx`、`tests/test_illustrator_connection.py`、`tests/test_com_client.py`、`logs/.gitkeep`、`outputs/.gitkeep`、本文和 `docs/milestones.md`。
-
-```powershell
-# 不启动 Illustrator 的安全边界单元测试
-python -m unittest discover -s tests -v
-
-# 真实端到端测试：创建新文档并保存 AI
-python tests/test_illustrator_connection.py --debug
-
-# 只验证语法
-python -m compileall -q src examples tests
-```
-
-普通 unittest discovery 不会启动 Illustrator。真实测试需要显式运行上述 smoke 脚本。失败时检查 `logs/illustrator.log`；`--debug` 记录生成的 JSX，默认 INFO 记录结果、时间和异常。日志可能包含路径或绘图文本，分享前自行检查。
-
-## 两种输入模式的运行与验收
-
-```powershell
-# 不启动 Illustrator：校验规范与布局
-python examples/render_spec.py examples/specs/reference_demo.json --validate-only
-python examples/render_spec.py examples/specs/pm25_workflow.json --validate-only
-
-# 各自新建 Illustrator 文档，保存 AI 和 PNG；默认使用唯一文件名
-python examples/render_spec.py examples/specs/reference_demo.json
-python examples/render_spec.py examples/specs/pm25_workflow.json
-```
-
-已生成的验收文件：`outputs/reference_reconstruction_v3.ai`、`outputs/reference_reconstruction_v3.png`、`outputs/pm25_workflow.ai`、`outputs/pm25_workflow.png`。对应 `.registry.json` 记录从真实文档读取的对象类型与文本框数量，`.jsx.log` 记录绘制步骤。
-
-参考图应出现蓝色圆角矩形、一个白色标题文本框和蓝色横线；流程图应出现 7 个节点、6 个箭头及标题。两者均已查看 PNG，无可见文字溢出或节点重叠。当前 CLI 接收 Agent 编写的 JSON，不自带图像识别或自然语言模型。
-
-## 当前客户端接口与边界
-
-已实现 `connect()`、`disconnect()`、`get_version()`、`get_active_document()`、`create_document()`、`execute_jsx()`、`save_document()`、`health_check()`。
-
-- `disconnect()` 只释放 COM 引用，不退出 Illustrator 或关闭文档。
-- 绘制与保存前激活客户端持有的新文档；不会自动接管原有工作文档。
-- `execute_jsx()` 只供可信内部开发代码使用，尚未暴露给 Agent。当前不提供任意脚本沙箱。
-- JSON 数据以 ASCII Unicode 转义传入 JSX，不在 ExtendScript 内依赖 `JSON.parse`。路径用 `Path.resolve().as_posix()` 再编码。
-- 基础坐标使用画板左上角为原点、x 向右、y 向下，映射到文档坐标 `[left + x, top - y]`；执行后恢复坐标系统。
-- 保存拒绝覆盖文件，只接受 `.ai`，启用 PDF compatible 数据。未强制向旧版降级保存。
-- 失败保留新文档供检查，不自动重试绘图，不强杀 Illustrator。**尚未实现事务回滚、快照或硬超时**。卡在 COM 调用时先检查 Illustrator 对话框。
-- COM 引用仅限连接线程使用；MCP 阶段将单独处理 STA 工作线程和串行任务。
-- 演示字体为 ArialMT，缺失时使用本机默认字体并记录实际选择。18 pt 是此连接演示的展示字号，后续科研样式再按论文最终尺寸设定。
-
-## Common errors
-
-| 现象 | 检查和处理 |
+| Symptom | Suggested check |
 | --- | --- |
-| `Illustrator.Application` 无法 Dispatch | 确認使用本机 Windows Python；先手动打开 Illustrator，完成登录、许可或首次启动提示。 |
-| `0x80040154` / `0x800401F3`，COM 未注册 | 检查 Illustrator 是否安装；通过安装程序修复 COM 注册。不要从网上复制未知注册表。 |
-| `0x80080005`，启动失败或 Illustrator 未启动 | 先在普通桌面 PowerShell 中运行；关闭启动提示。受限沙箱可能无法启动桌面 COM，本次即出现过；不代表未安装，也不意味着必须以管理员运行。 |
-| Illustrator 忙、调用被拒绝 | 关闭模态对话框，等待应用空闲后重新运行；不要在调用过程中手动切换/关闭测试文档。 |
-| `DoJavaScript` 不可用/失败 | 检查实际版本、脚本支持是否正常、日志中的 HRESULT 和 JSX 错误；修复 Illustrator 安装；不要假定每个版本都有相同 API。 |
-| `0x80010105`，应用发生服务器异常 | 检查 Windows 应用事件日志和输出旁的 `.jsx.log`。若只读 `app.version` 也失败，先保存需要保留的文档并重启 Illustrator，再跑 `--connect-only`；不要反复重试绘图或自动强杀进程。 |
-| 版本不符 | COM ProgID 可能绑定到另一安装版本；以 `get_version()` 为准，先处理安装注册问题。 |
-| JSX syntax error | JSX 使用旧版 ES3，不能使用 `let`、箭头函数等现代语法；开启 `--debug` 查看真实脚本。 |
-| Windows path escaping | CLI 路径用引号包裹；Python 传 `Path`，不要手写拼接 JSX 路径字符串。 |
-| 中文乱码 | 日志文件为 UTF-8；PowerShell 显示有问题时可设 `$env:PYTHONIOENCODING = "utf-8"`；图中文字缺字需安装/指定支持中文的字体。演示的中文目录已真实保存成功。 |
-| `saveAs` 出错 | 确认目录可写、后缀为 `.ai`、目标不存在，关闭保存/许可对话框；检查日志和 Illustrator 报错。 |
-| `exportAs` 出错 | 当前里程碑未实现 exportAs；后续将对 PNG/SVG/PDF 的不同 API 与格式参数分别实测，不能将 PDF 当作普通 exportFile 格式。 |
+| Dispatch fails or COM is not registered | Confirm local Illustrator installation; complete first-launch dialogs; repair the installation if necessary. |
+| Illustrator cannot start / `0x80080005` | Try a normal interactive desktop terminal and inspect pending application dialogs; a restricted execution environment can block desktop COM. |
+| COM reports Illustrator is busy | Finish modal dialogs and wait for the application to become idle before a new operation. |
+| DoJavaScript or JSX error | Inspect the exception and rendering trace; ExtendScript uses legacy syntax and API availability varies by version. |
+| Native application error / `0x80010105` | Preserve any open work, recover Illustrator, then run the connection check before attempting a new render. |
+| Missing characters | Choose an installed font that supports the required language; keep JSON and logs encoded as UTF-8. |
+| Save or export fails | Check the output directory, `.ai` extension and existing files; quote paths containing spaces. |
 
-## 后续路线
+A native crash occurred during early text-property experiments. The simplified renderer subsequently passed local integration checks, but the root cause was not established. The project remains experimental.
 
+## Roadmap
 
-验收本阶段后，按用户指定里程碑扩展：客户端完善 → 基础图形工具 → FigureSpec + 布局 → Renderer → PM2.5 workflow → MCP → Scientific Skill → Visual QC。
+- Structured MCP tools backed by the existing renderer.
+- Generic progressive rendering and natural-language speed presets.
+- Broader scientific primitives and graph routing.
+- Additional export formats and object editing operations.
+- Geometry checks and a preview-driven visual review loop.
 
-已增加并实测 `models/`、`layout/`、`renderer/` 的最小链路；后续继续完善对象编辑、科研图元与样式、分支路由、PDF/SVG 导出，再接入 MCP、Skill 和完整 QC。
+## Contributing
 
-API 参考入口：[Adobe Illustrator scripting](https://helpx.adobe.com/illustrator/using/scripting.html)。本阶段 API 可用性以本机 Illustrator 26.3.1 的真实调用为验收依据。
+Issues with minimal specifications and reproducible steps are welcome. Include Windows, Python and Illustrator versions, expected behavior and relevant error messages. Remove confidential research content and credentials before sharing logs or reference files.
+
+No open-source license has been selected yet. Public repository visibility does not itself grant a license to redistribute or commercially reuse the code.
+
+## References
+
+- [Adobe Illustrator scripting documentation](https://helpx.adobe.com/illustrator/using/scripting.html)
+- [Skill entry point](SKILL.md)
+- [Input modes and text preservation](docs/input_modes.md)
