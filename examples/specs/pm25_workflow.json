@@ -1,0 +1,25 @@
+{
+  "mode": "create",
+  "figure_type": "workflow",
+  "title": "PM2.5 Episode Analysis",
+  "source_note": "Agent-authored from the user's natural-language research workflow. The CLI consumes JSON; it does not parse language itself.",
+  "layout": {"kind": "vertical", "node_width": 190, "node_height": 52, "spacing": 30},
+  "nodes": [
+    {"id": "data", "node_type": "input", "label": "Air Quality Data\n+ Meteorological Data"},
+    {"id": "preprocess", "label": "Data Preprocessing"},
+    {"id": "episode", "label": "Pollution Episode Identification"},
+    {"id": "normalization", "node_type": "model", "label": "Meteorological Normalization"},
+    {"id": "transport", "node_type": "analysis", "label": "Regional Transport Analysis"},
+    {"id": "classification", "node_type": "result", "label": "Episode Classification"},
+    {"id": "strategy", "node_type": "result", "label": "Dynamic Joint Control Strategy",
+      "style": {"fill": "#D9EEE9", "stroke": "#297B70", "text": {"color": "#174D45"}}}
+  ],
+  "edges": [
+    {"id": "data_preprocess", "source": "data", "target": "preprocess"},
+    {"id": "preprocess_episode", "source": "preprocess", "target": "episode"},
+    {"id": "episode_normalization", "source": "episode", "target": "normalization"},
+    {"id": "normalization_transport", "source": "normalization", "target": "transport"},
+    {"id": "transport_classification", "source": "transport", "target": "classification"},
+    {"id": "classification_strategy", "source": "classification", "target": "strategy"}
+  ]
+}

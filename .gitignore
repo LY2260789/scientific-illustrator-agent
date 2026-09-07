@@ -1,0 +1,26 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.env
+logs/*
+!logs/.gitkeep
+outputs/*
+!outputs/.gitkeep
+
+# Private research examples: local only; never publish.
+examples/reconstruct_soc*.py
+examples/progressive_soc.py
+docs/soc*.md
+docs/progressive_rendering.md
+private/
+.venv-*/
+# Reference artwork and native research documents
+*.ai
+*.png
+*.jpg
+*.jpeg
+*.pdf
+*.gif

@@ -1,0 +1,22 @@
+{
+  "mode": "reconstruct",
+  "figure_type": "reference",
+  "source_note": "Agent measured the user-provided 1302 x 498 screenshot. Geometry is proportional; text remains editable. This is a worked example, not an automatic image parser.",
+  "canvas": {"width": 651, "height": 249, "margin": 0},
+  "layout": {"kind": "reference"},
+  "nodes": [
+    {
+      "id": "banner",
+      "label": "Scientific Illustrator Agent",
+      "position": {"x": 0.0453, "y": 0.1165},
+      "width": 0.9132,
+      "height": 0.5442,
+      "style": {"fill": "#2668B4", "stroke": null, "radius": 17,
+        "text": {"font": "ArialMT", "size": 25, "color": "#FFFFFF"}}
+    }
+  ],
+  "edges": [
+    {"id": "underline", "points": [{"x": 0.0453, "y": 0.8233}, {"x": 0.9585, "y": 0.8233}],
+      "arrow_style": {"head": false, "width": 1.5, "color": "#2668B4"}}
+  ]
+}

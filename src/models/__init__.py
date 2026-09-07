@@ -1,0 +1,1 @@
+"""Software-independent figure descriptions."""
