@@ -2,7 +2,7 @@
 
 通过 Python → Windows COM → `Illustrator.Application` → `DoJavaScript()` → ExtendScript 创建可编辑科研矢量图。
 
-**两种模式的基础渲染已在 Illustrator 2022 / 26.3.1 实测通过。** 包括 FigureSpec、基础布局、新文档矢量绘制、完整文本块检查、AI 保存和 PNG 预览。参考图示例有 1 个可编辑文本框，PM2.5 流程图有 8 个，多行标签保持一个文本对象。首次渲染曾发生崩溃，简化文字属性设置并由用户重启应用后，两次端到端测试均成功；确切崩溃原因尚未确定。MCP、Skill 和完整 Visual QC 尚未实现。详见 [两种输入模式与完整文本块规则](docs/input_modes.md)。
+**两种模式的基础渲染已在 Illustrator 2022 / 26.3.1 实测通过。** 包括 FigureSpec、基础布局、新文档矢量绘制、完整文本块检查、AI 保存和 PNG 预览。参考图示例有 1 个可编辑文本框，PM2.5 流程图有 8 个，多行标签保持一个文本对象。首次渲染曾发生崩溃，简化文字属性设置并由用户重启应用后，两次端到端测试均成功；确切崩溃原因尚未确定。已提供根目录 SKILL.md，可作为 CLI Skill 安装；MCP 和完整 Visual QC 尚未实现。详见 [两种输入模式与完整文本块规则](docs/input_modes.md)。
 
 ## Requirements
 
