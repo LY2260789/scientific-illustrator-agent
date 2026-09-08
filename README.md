@@ -4,7 +4,7 @@
 
 Scientific Illustrator Agent connects AI agents to desktop Adobe Illustrator through Python, Windows COM and ExtendScript. An agent interprets a drawing request or reference image, creates a validated FigureSpec, and renders native vector objects with editable text.
 
-**Status: experimental v0.1 — installable CLI Skill.** The core renderer has been exercised on Illustrator 2022. An MCP server is planned and is not included in this release.
+**Status: experimental v0.2 — installable CLI Skill.** Includes optional progressive SVG construction, direct generation, speed presets and GIF replay. The core renderer has been exercised on Illustrator 2022. An MCP server is planned and is not included in this release.
 
 ## Capabilities
 
@@ -16,7 +16,7 @@ Scientific Illustrator Agent connects AI agents to desktop Adobe Illustrator thr
 | Text integrity | One text block per label, including multiline labels; contents checked after rendering |
 | Object identification | Named objects and an exported registry |
 | Deliverables | Native AI document, PNG preview, specification and rendering trace |
-| Incremental construction | Low-level JSX support; generic speed-controlled CLI not yet available |
+| Incremental construction | Generic SVG-to-Illustrator CLI; staged or instant output, target duration, optional GIF |
 | MCP, PDF/SVG export, automated visual QC | Planned |
 
 The Python CLI does not contain a language model or an OCR service. Image interpretation and specification authoring are performed by the host agent. Complex illustration reconstruction and recovery of original chart data are outside the current FigureSpec renderer's scope.
@@ -65,7 +65,7 @@ In Codex, ask:
 
 > Install the Skill from https://github.com/LY2260789/scientific-illustrator-agent, using the repository root as the skill directory.
 
-For manual installation, place the repository contents in `~/.codex/skills/scientific-illustrator-agent/`, then install the Python dependencies there. Other agents need a compatible Skill loader and permission to execute local commands. This is not an MCP configuration; there is no MCP server command in v0.1.
+For manual installation, place the repository contents in `~/.codex/skills/scientific-illustrator-agent/`, then install the Python dependencies there. Other agents need a compatible Skill loader and permission to execute local commands. This is not an MCP configuration; there is no MCP server command in v0.2.
 
 ## Quick start
 
@@ -108,6 +108,8 @@ The agent should read the schema, write and validate a FigureSpec, render it, an
 
 ## Outputs and document handling
 
+For optional progressive drawing of existing vector SVG artwork, see [progressive construction](docs/progressive_svg.md). The command supports `--mode progressive --duration 30` or `--mode instant`; both save editable AI and a PNG preview. GIF recording is optional. This entry point does not trace bitmap images.
+
 Each FigureSpec render produces:
 
 - `.ai`: native Illustrator document.
@@ -126,7 +128,7 @@ Reference artwork, private research examples, output files and runtime logs are 
 .\.venv\Scripts\python.exe -m unittest discover -s tests
 ```
 
-The current suite contains 14 offline tests covering the COM wrapper, specification validation and layout. Passing these tests does not verify the installed Illustrator runtime. Use the connection and rendering commands above for desktop integration checks.
+The current suite contains 17 offline tests covering the COM wrapper, specification validation, layout, SVG input validation, group ordering and speed presets. Passing these tests does not verify the installed Illustrator runtime. Use the connection and rendering commands above for desktop integration checks.
 
 ```text
 SKILL.md              Agent workflow and operational guidance
@@ -156,7 +158,7 @@ A native crash occurred during early text-property experiments. The simplified r
 ## Roadmap
 
 - Structured MCP tools backed by the existing renderer.
-- Generic progressive rendering and natural-language speed presets.
+- Extend progressive rendering to more input formats and layouts.
 - Broader scientific primitives and graph routing.
 - Additional export formats and object editing operations.
 - Geometry checks and a preview-driven visual review loop.

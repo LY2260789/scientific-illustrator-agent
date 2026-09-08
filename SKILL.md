@@ -26,4 +26,23 @@ Run `python "<skill-directory>/examples/hello_illustrator.py" --connect-only` to
 
 The CLI supports basic nodes, text and arrows, AI saving and PNG export. It does not call a language or vision model itself: the agent interprets the request and creates the spec. Do not claim pixel-exact reconstruction or original numerical data from a screenshot. Complex branched routing, full visual QC, PDF/SVG export and MCP are not implemented in this CLI.
 
-The bundled `src/illustrator/jsx/artwork.jsx` has incremental drawing support, but a generic speed-controlled CLI is not yet included. If asked for slow live demonstrations, explain this limitation instead of passing nonexistent speed flags. Private research examples are not part of this skill.
+## Optional progressive construction
+
+Use `examples/progressive_svg.py` for an existing vector SVG, including detailed vector artwork. This is an additional SVG entry point, not automatic bitmap tracing. It starts Illustrator through COM, opens a temporary SVG source, then copies actual graphical groups into a fresh destination document in order. It closes only the temporary source. No selection-dependent operation or raster reveal is used.
+
+Always produce `progressive.ai` and `final.png`. Choose the mode from the user's intent:
+
+- "一步生成", "直接出图": `--mode instant`; no intentional pauses or GIF.
+- "逐步生成", "演示过程": `--mode progressive --duration 30 --batch-size 8 --start-delay 10 --live-only` for a roughly 30-second live construction.
+- If a replay GIF is requested, omit `--live-only`; output includes `build.gif` and actual exported PNG frames.
+- For an explicit per-group speed instead of a target duration, use `--delay-ms 80` or `--speed 快速|正常|慢速`. Never combine `--duration` with `--delay-ms`.
+
+Example (paths are relative to the skill directory unless made absolute):
+
+```powershell
+python examples/progressive_svg.py --source-svg examples/specs/progressive_demo.svg --output-dir outputs/demo_new --duration 30 --batch-size 1 --start-delay 10
+```
+
+Use absolute paths when invoking from another directory. Select a fresh output directory every time. An element for this command means a top-level SVG graphical group, potentially containing many paths; retain compound paths to preserve holes. A 30-second target excludes source import, final saving and GIF encoding. If copying/redrawing/exporting takes longer, remaining waits are skipped; report the actual construction duration from `process.json`. GIF speed is independent (`--frame-ms`).
+
+The importer accepts a restricted vector/text SVG subset. It rejects images, external resources, scripts, filters and CSS. See `docs/progressive_svg.md` for parameters and requirements. Other SVG features may require a separate conversion step. Private research examples are not part of this skill.

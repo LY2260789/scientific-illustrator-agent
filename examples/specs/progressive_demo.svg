@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320pt" height="160pt" viewBox="0 0 320 160">
+  <rect x="0" y="0" width="320" height="160" fill="#edf5fa"/>
+  <g><rect x="20" y="50" width="90" height="60" rx="8" fill="#4388bb"/><text x="35" y="85" font-family="Arial" font-size="16" fill="#ffffff">Input</text></g>
+  <path d="M125 80L190 80M180 72L190 80L180 88" fill="none" stroke="#316a91" stroke-width="3"/>
+  <g><circle cx="245" cy="80" r="40" fill="#72b09b"/><text x="220" y="85" font-family="Arial" font-size="16" fill="#ffffff">Result</text></g>
+</svg>

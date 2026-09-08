@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "scientific-illustrator-agent"
-version = "0.1.0"
+version = "0.2.0"
 description = "Scientific vector drawing through local Illustrator COM and ExtendScript"
 requires-python = ">=3.9"
 dependencies = ["pywin32>=306; sys_platform == 'win32'", "pydantic>=1.10,<3", "Pillow>=9.5,<12"]
