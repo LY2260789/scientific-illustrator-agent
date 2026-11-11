@@ -4,7 +4,7 @@
 
 Scientific Illustrator Agent connects AI agents to desktop Adobe Illustrator through Python, Windows COM and ExtendScript. An agent interprets a drawing request or reference image, creates a validated FigureSpec, and renders native vector objects with editable text.
 
-**Status: experimental v0.2 — installable CLI Skill.** Includes optional progressive SVG construction, direct generation, speed presets and GIF replay. The core renderer has been exercised on Illustrator 2022. An MCP server is planned and is not included in this release.
+**Status: experimental v0.3 — installable CLI Skill.** Includes optional progressive SVG construction, direct generation, speed presets, GIF replay and a multi-cursor presentation effect. The core renderer and the SOC cursor presentation have been exercised on Illustrator 2022.
 
 ## Capabilities
 
@@ -17,6 +17,7 @@ Scientific Illustrator Agent connects AI agents to desktop Adobe Illustrator thr
 | Object identification | Named objects and an exported registry |
 | Deliverables | Native AI document, PNG preview, specification and rendering trace |
 | Incremental construction | Generic SVG-to-Illustrator CLI; staged or instant output, target duration, optional GIF |
+| Optional cursor presentation | 2–30 animated cursors synchronized with spatial batches of real vector objects |
 | MCP, PDF/SVG export, automated visual QC | Planned |
 
 The Python CLI does not contain a language model or an OCR service. Image interpretation and specification authoring are performed by the host agent. Complex illustration reconstruction and recovery of original chart data are outside the current FigureSpec renderer's scope.
@@ -65,7 +66,7 @@ In Codex, ask:
 
 > Install the Skill from https://github.com/LY2260789/scientific-illustrator-agent, using the repository root as the skill directory.
 
-For manual installation, place the repository contents in `~/.codex/skills/scientific-illustrator-agent/`, then install the Python dependencies there. Other agents need a compatible Skill loader and permission to execute local commands. This is not an MCP configuration; there is no MCP server command in v0.2.
+For manual installation, place the repository contents in `~/.codex/skills/scientific-illustrator-agent/`, then install the Python dependencies there. Other agents need a compatible Skill loader and permission to execute local commands. The package provides a CLI Skill with local COM execution.
 
 ## Quick start
 
@@ -106,6 +107,47 @@ Example requests for an agent with this Skill installed:
 
 The agent should read the schema, write and validate a FigureSpec, render it, and inspect the PNG preview. See [input modes](docs/input_modes.md), [the schema](src/models/figure_spec.py), and [example specifications](examples/specs).
 
+### Optional multi-cursor presentation
+
+Open and maximize Illustrator, then run the public SOC reconstruction example.
+
+```powershell
+.\.venv\Scripts\python.exe examples/swarm_draw.py --scene-json examples/soc_graphical_abstract/scene.json --output-dir outputs/soc_swarm_01 --cursors 12 --duration 40 --start-delay 5
+```
+
+The canvas aligns automatically. Several regions advance together while colored
+cursors follow their primitives. A single COM worker submits spatial drawing
+batches, and a local Tk window animates the cursors. `--cursors` selects the
+presentation cursor count, with `--agents` accepted as an alias. The standard
+workflow and progressive SVG commands remain available through their existing
+entry points.
+
+The scene and JSX renderer are loaded once. The SOC case uses 572 objects,
+including 11 native gradient fills. Each colored ribbon is one complete path.
+Small index-only COM calls draw the spatial batches, followed by full object
+and text verification before saving.
+
+![Editable SOC reconstruction](examples/soc_graphical_abstract/preview.png)
+
+The case includes 512 paths and 60 complete editable text blocks. Curves and
+decorative textures are visual approximations. See the [case and replay commands](examples/soc_graphical_abstract/README.md) and [cursor presentation guide](docs/swarm_demo.md).
+
+### Execute generated commands through COM
+
+Native scene runs emit `commands.jsx`. From a Python session with pywin32,
+use the absolute path to the generated file.
+
+```python
+import win32com.client
+
+app = win32com.client.Dispatch("Illustrator.Application")
+app.DoJavaScriptFile(r"C:\work\scientific-illustrator-agent\outputs\soc_swarm_01\commands.jsx")
+```
+
+`DoJavaScriptFile` creates the editable artwork in a new document. The Python
+`swarm_draw.py` entry point also runs the desktop cursor animation and saves AI
+and PNG outputs. Short scripts can be submitted with `app.DoJavaScript(...)`.
+
 ## Outputs and document handling
 
 For optional progressive drawing of existing vector SVG artwork, see [progressive construction](docs/progressive_svg.md). The command supports `--mode progressive --duration 30` or `--mode instant`; both save editable AI and a PNG preview. GIF recording is optional. This entry point does not trace bitmap images.
@@ -120,7 +162,9 @@ Each FigureSpec render produces:
 
 Rendering creates a new document and checks text contents and object counts. It does not adopt the user's existing document for editing. There is no transactional rollback: a failed operation can leave a partial new document or partial output files for inspection. The renderer does not automatically close Illustrator or retry failed mutations.
 
-Reference artwork, private research examples, output files and runtime logs are excluded from this repository.
+The public SOC reconstruction scene and its exported preview are included under
+`examples/soc_graphical_abstract/`. Other private research examples, output files
+and runtime logs are excluded from this repository.
 
 ## Development and validation
 
@@ -128,7 +172,10 @@ Reference artwork, private research examples, output files and runtime logs are 
 .\.venv\Scripts\python.exe -m unittest discover -s tests
 ```
 
-The current suite contains 17 offline tests covering the COM wrapper, specification validation, layout, SVG input validation, group ordering and speed presets. Passing these tests does not verify the installed Illustrator runtime. Use the connection and rendering commands above for desktop integration checks.
+The current suite contains 29 offline tests covering the COM wrapper,
+specification validation, layout, SVG input validation, cursor planning,
+alignment and cancellation. The complete SOC cursor run was also checked in
+Illustrator 2022, including actual object names, counts and text contents.
 
 ```text
 SKILL.md              Agent workflow and operational guidance

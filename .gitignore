@@ -24,3 +24,7 @@ private/
 *.jpeg
 *.pdf
 *.gif
+
+# Approved public reconstruction preview and local development copies
+!examples/soc_graphical_abstract/preview.png
+demos/

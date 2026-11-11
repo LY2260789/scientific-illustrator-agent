@@ -1,6 +1,6 @@
 ---
 name: scientific-illustrator-agent
-description: Create editable scientific workflow diagrams in desktop Adobe Illustrator from natural-language ideas or simple reference images, using a bundled Python FigureSpec renderer and Windows COM. Use when the user wants Illustrator vector objects and editable text rather than a raster image.
+description: Create editable scientific workflow diagrams in desktop Adobe Illustrator from ideas or simple references through Python and Windows COM. Supports an optional animated multi-cursor presentation when requested.
 ---
 
 # Scientific Illustrator Agent
@@ -46,3 +46,27 @@ python examples/progressive_svg.py --source-svg examples/specs/progressive_demo.
 Use absolute paths when invoking from another directory. Select a fresh output directory every time. An element for this command means a top-level SVG graphical group, potentially containing many paths; retain compound paths to preserve holes. A 30-second target excludes source import, final saving and GIF encoding. If copying/redrawing/exporting takes longer, remaining waits are skipped; report the actual construction duration from `process.json`. GIF speed is independent (`--frame-ms`).
 
 The importer accepts a restricted vector/text SVG subset. It rejects images, external resources, scripts, filters and CSS. See `docs/progressive_svg.md` for parameters and requirements. Other SVG features may require a separate conversion step. Private research examples are not part of this skill.
+
+## Optional multi-cursor presentation
+
+Use `examples/swarm_draw.py` when the user requests a mouse swarm, multiple
+animated cursors, a group drawing presentation or a screen recording of that
+effect. Continue using the standard Draw and progressive construction entry
+points for their existing tasks. Read `docs/swarm_demo.md` for parameters and
+COM calls, and `examples/soc_graphical_abstract/README.md` for the public case.
+
+```powershell
+python examples/swarm_draw.py --scene-json examples/soc_graphical_abstract/scene.json --output-dir outputs/soc_swarm_new --cursors 12 --duration 40
+```
+
+The optional mode accepts native primitive scenes and the existing SVG subset.
+One COM worker creates real vector objects in spatial waves while a local Tk
+overlay animates their presentation cursors. Describe the cursor count and COM
+execution accurately when discussing agents or concurrency. The scene and JSX
+renderer are cached once, followed by small index-only drawing commands.
+
+Alignment is automatic on supported Windows Illustrator canvases. Keep the
+view fixed while drawing. `--manual-align` provides drag calibration, and Esc
+cancels between waves. Each run needs a fresh output directory. Inspect
+`final.png` and the verified object/text counts in `process.json`, then deliver
+`swarm.ai`. Native scene mode also emits `commands.jsx` for direct COM replay.

@@ -7,6 +7,26 @@ function renderArtwork(scene) {
         c.red = parseInt(hex.substr(1,2),16); c.green = parseInt(hex.substr(3,2),16); c.blue = parseInt(hex.substr(5,2),16);
         return c;
     }
+    function gradientFill(spec, id, artboard) {
+        var gradient = doc.gradients.add();
+        gradient.name = 'SCI_GRADIENT_' + id;
+        gradient.type = GradientType.LINEAR;
+        while (gradient.gradientStops.length < spec.stops.length) gradient.gradientStops.add();
+        for (var i = 0; i < spec.stops.length; i++) {
+            var input = spec.stops[i], stop = gradient.gradientStops[i];
+            stop.rampPoint = input.offset;
+            stop.color = color(input.color);
+            stop.opacity = input.opacity === undefined ? 100 : input.opacity;
+            stop.midPoint = 50;
+        }
+        var dx = spec.end[0] - spec.start[0], dy = spec.start[1] - spec.end[1];
+        var paint = new GradientColor();
+        paint.gradient = gradient;
+        paint.matrix = app.getRotationMatrix(Math.atan2(dy, dx) * 180 / Math.PI);
+        paint.origin = [artboard[0] + spec.start[0], artboard[1] - spec.start[1]];
+        paint.length = Math.sqrt(dx * dx + dy * dy);
+        return paint;
+    }
     try {
         app.coordinateSystem = CoordinateSystem.DOCUMENTCOORDINATESYSTEM;
         var b = doc.artboards[0].artboardRect;
@@ -25,6 +45,10 @@ function renderArtwork(scene) {
                     catch (missingGroup) { groups[key] = parent.groupItems.add(); groups[key].name = "SCI_GROUP_" + o.group; }
                 }
                 parent = groups[key];
+            }
+            if (scene.session_key) {
+                parent = $.global[scene.session_key].slots[o.swarm_index];
+                if (parent.pageItems.length) throw new Error('Primitive already drawn: ' + o.id);
             }
             var item;
             if (o.kind === "text") {
@@ -45,7 +69,7 @@ function renderArtwork(scene) {
                     }
                 }
                 if (o.rotation) item.rotate(o.rotation);
-                app.redraw();
+                if (!scene.defer_redraw) app.redraw();
                 if (item.width > o.width + 1 || item.height > o.height + 1)
                     warnings.push("Text box exceeded: " + o.id + " " + item.width.toFixed(1) + "x" + item.height.toFixed(1));
                 item.left = b[0] + o.x + (o.align === "left" ? 0 : (o.width - item.width) / 2);
@@ -64,6 +88,7 @@ function renderArtwork(scene) {
                 }
                 item.name = "SCI_PATH_" + o.id;
                 item.filled = !!o.fill; if (o.fill) item.fillColor = color(o.fill);
+                if (o.gradient) { item.filled = true; item.fillColor = gradientFill(o.gradient, o.id, b); }
                 item.stroked = !!o.stroke; if (o.stroke) { item.strokeColor = color(o.stroke); item.strokeWidth = o.stroke_width; }
                 if (o.dash) item.strokeDashes = o.dash;
             }
@@ -71,13 +96,16 @@ function renderArtwork(scene) {
             if (scene.element_delay_ms) { app.redraw(); $.sleep(scene.element_delay_ms); }
         }
         var expectedText = scene.expected_text_total === undefined ? textCount : scene.expected_text_total;
-        if (doc.textFrames.length !== expectedText) throw new Error("Unexpected split text frames");
         var leafCount = 0, rasterCount = 0;
-        for (var k = 0; k < doc.pageItems.length; k++) {
-            if (doc.pageItems[k].typename !== "GroupItem") leafCount++;
-            if (doc.pageItems[k].typename === "RasterItem" || doc.pageItems[k].typename === "PlacedItem") rasterCount++;
-        }
         var expectedTotal = scene.expected_total === undefined ? scene.items.length : scene.expected_total;
+        if (scene.defer_validation) leafCount = expectedTotal;
+        else {
+            if (doc.textFrames.length !== expectedText) throw new Error("Unexpected split text frames");
+            for (var k = 0; k < doc.pageItems.length; k++) {
+                if (doc.pageItems[k].typename !== "GroupItem") leafCount++;
+                if (doc.pageItems[k].typename === "RasterItem" || doc.pageItems[k].typename === "PlacedItem") rasterCount++;
+            }
+        }
         if (leafCount !== expectedTotal || rasterCount !== 0) throw new Error("Object count or raster validation failed");
         app.redraw();
         return "OK|" + leafCount + "|" + expectedText + "|" + warnings.join("; ");
