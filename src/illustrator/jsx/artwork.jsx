@@ -7,7 +7,7 @@ function renderArtwork(scene) {
         c.red = parseInt(hex.substr(1,2),16); c.green = parseInt(hex.substr(3,2),16); c.blue = parseInt(hex.substr(5,2),16);
         return c;
     }
-    function gradientFill(spec, id, artboard) {
+    function gradientFill(spec, id, item) {
         var gradient = doc.gradients.add();
         gradient.name = 'SCI_GRADIENT_' + id;
         gradient.type = GradientType.LINEAR;
@@ -22,10 +22,11 @@ function renderArtwork(scene) {
         var dx = spec.end[0] - spec.start[0], dy = spec.start[1] - spec.end[1];
         var paint = new GradientColor();
         paint.gradient = gradient;
-        paint.matrix = app.getRotationMatrix(Math.atan2(dy, dx) * 180 / Math.PI);
-        paint.origin = [artboard[0] + spec.start[0], artboard[1] - spec.start[1]];
-        paint.length = Math.sqrt(dx * dx + dy * dy);
-        return paint;
+        item.fillColor = paint;
+        // Illustrator 2022 ignores GradientColor.angle/matrix assignments.
+        // Rotate the native gradient only, retaining the path geometry.
+        var angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        if (angle) item.rotate(angle, false, false, true, false, Transformation.CENTER);
     }
     try {
         app.coordinateSystem = CoordinateSystem.DOCUMENTCOORDINATESYSTEM;
@@ -82,13 +83,17 @@ function renderArtwork(scene) {
                     if (o.radius) item = parent.pathItems.roundedRectangle(b[1]-o.y,b[0]+o.x,o.width,o.height,o.radius,o.radius);
                     else item = parent.pathItems.rectangle(b[1]-o.y,b[0]+o.x,o.width,o.height);
                 } else {
-                    item = parent.pathItems.add(); var points = [];
+                    if (o.kind === 'arrow') {
+                        item = $.global[scene.session_key].arrowTemplates[nativeArrowKey(o)].duplicate(parent, ElementPlacement.PLACEATBEGINNING);
+                        item.hidden = false;
+                    } else item = parent.pathItems.add();
+                    var points = [];
                     for (var p = 0; p < o.points.length; p++) points.push(xy(o.points[p]));
                     item.setEntirePath(points); item.closed = !!o.closed;
                 }
                 item.name = "SCI_PATH_" + o.id;
                 item.filled = !!o.fill; if (o.fill) item.fillColor = color(o.fill);
-                if (o.gradient) { item.filled = true; item.fillColor = gradientFill(o.gradient, o.id, b); }
+                if (o.gradient) { item.filled = true; gradientFill(o.gradient, o.id, item); }
                 item.stroked = !!o.stroke; if (o.stroke) { item.strokeColor = color(o.stroke); item.strokeWidth = o.stroke_width; }
                 if (o.dash) item.strokeDashes = o.dash;
             }

@@ -31,7 +31,9 @@ def align_artboard(client, hwnd):
     candidates = []
 
     def visit(child, unused):
-        if win32gui.IsWindowVisible(child) and win32gui.GetWindowText(child) == 'OS_ViewContainer':
+        # Illustrator can mark the canvas hidden while its window is in the
+        # background. Its geometry still matches the current document view.
+        if win32gui.GetWindowText(child) == 'OS_ViewContainer':
             bounds = win32gui.GetWindowRect(child)
             width, height = bounds[2] - bounds[0], bounds[3] - bounds[1]
             if min(width, height) > 200:

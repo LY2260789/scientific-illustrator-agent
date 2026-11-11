@@ -10,6 +10,7 @@ from illustrator.com_client import jsx_literal
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / 'src/illustrator/jsx/artwork.jsx'
+ARROW_TEMPLATE = ROOT / 'src/illustrator/jsx/native_arrows.jsx'
 
 INITIALIZE = '''function initializeSwarm(scene,key){
     var doc=app.activeDocument, layers={}, groups={}, slots=[];
@@ -44,15 +45,17 @@ def validate_scene(scene):
     if not items or len({item['id'] for item in items}) != len(items):
         raise ValueError('Scene needs primitives with unique IDs')
     for item in items:
-        if item['kind'] not in ('rect', 'ellipse', 'path', 'text'):
+        if item['kind'] not in ('rect', 'ellipse', 'path', 'arrow', 'text'):
             raise ValueError('Unsupported primitive kind')
-        if item['kind'] == 'path' and len(item['points']) < 2:
+        if item['kind'] in ('path', 'arrow') and len(item['points']) < 2:
             raise ValueError('A path needs at least two points')
         for point in item_trace(item):
             if not all(math.isfinite(value) for value in point):
                 raise ValueError('Primitive coordinates must be finite')
         if 'gradient' in item:
             validate_gradient(item)
+        if item['kind'] == 'arrow':
+            validate_arrow(item)
     # Validate all nested numeric attributes, including opacity and rich text runs.
     json.dumps(scene, allow_nan=False)
 
@@ -80,8 +83,25 @@ def validate_gradient(item):
             raise ValueError('Gradient opacity must be 0..100')
 
 
+def validate_arrow(item):
+    if item.get('closed') or item.get('gradient') or not item.get('stroke') or item.get('stroke_width', 0) <= 0:
+        raise ValueError('A native arrow requires an open stroked path')
+    options = item.get('arrowheads', {})
+    for end, default in [('start', 0), ('end', 7)]:
+        number = options.get(end, default)
+        if not isinstance(number, int) or not 0 <= number <= 39:
+            raise ValueError('Native arrowhead numbers must be 0..39')
+        scale = options.get(end + '_scale', 100)
+        if not math.isfinite(scale) or scale <= 0:
+            raise ValueError('Native arrowhead scales must be positive')
+    if not options.get('start', 0) and not options.get('end', 7):
+        raise ValueError('A native arrow requires at least one arrowhead')
+    if options.get('align', 0) not in (0, 1):
+        raise ValueError('Native arrowhead alignment must be 0 or 1')
+
+
 def item_trace(item):
-    if item['kind'] == 'path':
+    if item['kind'] in ('path', 'arrow'):
         points = [list(point) for point in item['points']]
         if item.get('closed'):
             points.append(points[0])
@@ -136,11 +156,12 @@ def initialize_scene(client, scene, key):
 
 def installation_script(scene, key):
     # Keep the scene and renderer in one ExtendScript closure for the entire run.
-    setup = '(function(){' + INITIALIZE + TEMPLATE.read_text(encoding='utf-8')
+    setup = '(function(){' + INITIALIZE + ARROW_TEMPLATE.read_text(encoding='utf-8') + TEMPLATE.read_text(encoding='utf-8')
     setup += '\nvar scene=' + jsx_literal(scene) + ', key=' + jsx_literal(key) + ';\n'
     return setup + '''
         initializeSwarm(scene,key);
         var state=$.global[key]; state.total=0; state.texts=0;
+        installNativeArrowTemplates(scene,state,key);
         state.draw=function(indices){
             var items=[], texts=state.texts;
             for(var i=0;i<indices.length;i++){
@@ -178,9 +199,14 @@ def verify_scene(client, scene):
             if(!expected.hasOwnProperty(item.name) || seen[item.name]) throw new Error('Unexpected primitive');
             if(item.typename==='TextFrame' && item.contents!==expected[item.name]) throw new Error('Text changed');
             if(gradients.hasOwnProperty(item.name)){
-                var paint=item.fillColor, stops=gradients[item.name].stops;
+                var spec=gradients[item.name], paint=item.fillColor, stops=spec.stops;
                 if(paint.typename!=='GradientColor' || paint.gradient.gradientStops.length!==stops.length)
                     throw new Error('Native gradient missing: '+item.name);
+                var expectedAngle=Math.atan2(spec.start[1]-spec.end[1],spec.end[0]-spec.start[0]);
+                var actualAngle=Math.atan2(paint.matrix.mValueB,paint.matrix.mValueA);
+                var difference=actualAngle-expectedAngle;
+                if(Math.abs(Math.atan2(Math.sin(difference),Math.cos(difference)))>.0001)
+                    throw new Error('Gradient direction changed: '+item.name);
                 for(var j=0;j<stops.length;j++){
                     var actual=paint.gradient.gradientStops[j];
                     if(Math.abs(actual.rampPoint-stops[j].offset)>.01)
@@ -211,5 +237,6 @@ def write_commands(scene, path, agents, duration):
         parts.append(f'result=$.global[{jsx_literal(key)}].draw({jsx_literal(indices)});')
         parts.append("if(result.indexOf('OK|')!==0) throw new Error(result);")
         parts.append(f'$.sleep({round(duration * 1000 / len(waves))});')
-    parts.extend([f'delete $.global[{jsx_literal(key)}];', 'return result;', '})();'])
+    parts.extend([f'$.global[{jsx_literal(key)}].releaseArrows();',
+                  f'delete $.global[{jsx_literal(key)}];', 'return result;', '})();'])
     path.write_text('\n'.join(parts), encoding='utf-8')

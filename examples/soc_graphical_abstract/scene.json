@@ -5378,7 +5378,7 @@
       "align": "left"
     },
     {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_0729",
       "layer": "02_Variable_tables",
       "group": null,
@@ -5395,31 +5395,13 @@
       "stroke": "#8CC65D",
       "stroke_width": 3.5,
       "fill": null,
-      "closed": false
-    },
-    {
-      "kind": "path",
-      "id": "object_0730",
-      "layer": "02_Variable_tables",
-      "group": null,
-      "points": [
-        [
-          797.5,
-          31.5
-        ],
-        [
-          790.1998463534712,
-          35.39971239158378
-        ],
-        [
-          789.8220195473662,
-          28.40991647864122
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#8CC65D",
-      "closed": true
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 20.0,
+        "align": 0
+      }
     },
     {
       "kind": "text",
@@ -5453,7 +5435,7 @@
       "align": "left"
     },
     {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_0733",
       "layer": "02_Variable_tables",
       "group": null,
@@ -5470,31 +5452,13 @@
       "stroke": "#262B75",
       "stroke_width": 7.0,
       "fill": null,
-      "closed": false
-    },
-    {
-      "kind": "path",
-      "id": "object_0734",
-      "layer": "02_Variable_tables",
-      "group": null,
-      "points": [
-        [
-          797.0,
-          69.5
-        ],
-        [
-          788.0,
-          76.5
-        ],
-        [
-          788.0,
-          62.5
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#262B75",
-      "closed": true
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 20.0,
+        "align": 0
+      }
     },
     {
       "kind": "text",
@@ -5512,7 +5476,7 @@
       "align": "left"
     },
     {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_0736",
       "layer": "02_Variable_tables",
       "group": null,
@@ -5529,31 +5493,13 @@
       "stroke": "#262B75",
       "stroke_width": 7.0,
       "fill": null,
-      "closed": false
-    },
-    {
-      "kind": "path",
-      "id": "object_0737",
-      "layer": "02_Variable_tables",
-      "group": null,
-      "points": [
-        [
-          797.0,
-          97.5
-        ],
-        [
-          788.0,
-          104.5
-        ],
-        [
-          788.0,
-          90.5
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#262B75",
-      "closed": true
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 20.0,
+        "align": 0
+      }
     },
     {
       "kind": "text",
@@ -5947,7 +5893,7 @@
       ]
     },
     {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_0757",
       "layer": "03_Models",
       "group": null,
@@ -5964,34 +5910,16 @@
       "stroke": "#A20097",
       "stroke_width": 0.85,
       "fill": null,
-      "closed": false
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 76.0,
+        "align": 0
+      }
     },
     {
-      "kind": "path",
-      "id": "object_0758",
-      "layer": "03_Models",
-      "group": null,
-      "points": [
-        [
-          372.0,
-          97.0
-        ],
-        [
-          368.77,
-          88.5
-        ],
-        [
-          375.23,
-          88.5
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#A20097",
-      "closed": true
-    },
-    {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_0759",
       "layer": "03_Models",
       "group": null,
@@ -6008,31 +5936,13 @@
       "stroke": "#00ADE0",
       "stroke_width": 0.85,
       "fill": null,
-      "closed": false
-    },
-    {
-      "kind": "path",
-      "id": "object_0760",
-      "layer": "03_Models",
-      "group": null,
-      "points": [
-        [
-          324.0,
-          157.0
-        ],
-        [
-          320.77,
-          148.5
-        ],
-        [
-          327.23,
-          148.5
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#00ADE0",
-      "closed": true
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 76.0,
+        "align": 0
+      }
     },
     {
       "kind": "path",
@@ -7475,7 +7385,7 @@
       "closed": false
     },
     {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_0794",
       "layer": "04_Forest",
       "group": null,
@@ -7492,34 +7402,16 @@
       "stroke": "#121212",
       "stroke_width": 0.75,
       "fill": null,
-      "closed": false
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 81.0667,
+        "align": 0
+      }
     },
     {
-      "kind": "path",
-      "id": "object_0795",
-      "layer": "04_Forest",
-      "group": null,
-      "points": [
-        [
-          175.0,
-          253.5
-        ],
-        [
-          182.65780621585606,
-          249.67905718959366
-        ],
-        [
-          183.26278882750375,
-          255.72888330607037
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#121212",
-      "closed": true
-    },
-    {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_0796",
       "layer": "04_Forest",
       "group": null,
@@ -7536,34 +7428,16 @@
       "stroke": "#121212",
       "stroke_width": 0.75,
       "fill": null,
-      "closed": false
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 81.0667,
+        "align": 0
+      }
     },
     {
-      "kind": "path",
-      "id": "object_0797",
-      "layer": "04_Forest",
-      "group": null,
-      "points": [
-        [
-          403.5,
-          259.0
-        ],
-        [
-          410.2095660231939,
-          253.68743717398073
-        ],
-        [
-          412.0444358941099,
-          259.4839579025562
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#121212",
-      "closed": true
-    },
-    {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_0798",
       "layer": "04_Forest",
       "group": null,
@@ -7580,31 +7454,13 @@
       "stroke": "#121212",
       "stroke_width": 0.75,
       "fill": null,
-      "closed": false
-    },
-    {
-      "kind": "path",
-      "id": "object_0799",
-      "layer": "04_Forest",
-      "group": null,
-      "points": [
-        [
-          784.0,
-          276.0
-        ],
-        [
-          775.6017047266586,
-          277.64627959404567
-        ],
-        [
-          776.6277927933016,
-          271.65348865163054
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#121212",
-      "closed": true
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 81.0667,
+        "align": 0
+      }
     },
     {
       "kind": "rect",
@@ -18067,7 +17923,7 @@
       "stroke_width": 1.25
     },
     {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_1170",
       "layer": "06_Aggregation",
       "group": "aggregate_bracket",
@@ -18084,34 +17940,16 @@
       "stroke": "#121212",
       "stroke_width": 0.7,
       "fill": null,
-      "closed": false
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 81.4286,
+        "align": 0
+      }
     },
     {
-      "kind": "path",
-      "id": "object_1171",
-      "layer": "06_Aggregation",
-      "group": "aggregate_bracket",
-      "points": [
-        [
-          99.5,
-          442.5
-        ],
-        [
-          96.65,
-          435.0
-        ],
-        [
-          102.35,
-          435.0
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#121212",
-      "closed": true
-    },
-    {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_1172",
       "layer": "06_Aggregation",
       "group": "aggregate_bracket",
@@ -18128,34 +17966,16 @@
       "stroke": "#121212",
       "stroke_width": 0.7,
       "fill": null,
-      "closed": false
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 81.4286,
+        "align": 0
+      }
     },
     {
-      "kind": "path",
-      "id": "object_1173",
-      "layer": "06_Aggregation",
-      "group": "aggregate_bracket",
-      "points": [
-        [
-          352.0,
-          442.5
-        ],
-        [
-          349.15,
-          435.0
-        ],
-        [
-          354.85,
-          435.0
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#121212",
-      "closed": true
-    },
-    {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_1174",
       "layer": "06_Aggregation",
       "group": "aggregate_bracket",
@@ -18172,31 +17992,13 @@
       "stroke": "#121212",
       "stroke_width": 0.7,
       "fill": null,
-      "closed": false
-    },
-    {
-      "kind": "path",
-      "id": "object_1175",
-      "layer": "06_Aggregation",
-      "group": "aggregate_bracket",
-      "points": [
-        [
-          864.0,
-          442.5
-        ],
-        [
-          861.15,
-          435.0
-        ],
-        [
-          866.85,
-          435.0
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#121212",
-      "closed": true
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 81.4286,
+        "align": 0
+      }
     },
     {
       "kind": "path",
@@ -20600,7 +20402,7 @@
       "stroke_width": 0.65
     },
     {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_1179",
       "layer": "06_Aggregation",
       "group": null,
@@ -20617,31 +20419,13 @@
       "stroke": "#121212",
       "stroke_width": 0.6,
       "fill": null,
-      "closed": false
-    },
-    {
-      "kind": "path",
-      "id": "object_1180",
-      "layer": "06_Aggregation",
-      "group": null,
-      "points": [
-        [
-          218.0,
-          493.0
-        ],
-        [
-          215.34,
-          486.0
-        ],
-        [
-          220.66,
-          486.0
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#121212",
-      "closed": true
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 88.6667,
+        "align": 0
+      }
     },
     {
       "kind": "ellipse",
@@ -20657,7 +20441,7 @@
       "stroke_width": 0.65
     },
     {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_1182",
       "layer": "06_Aggregation",
       "group": null,
@@ -20674,31 +20458,13 @@
       "stroke": "#121212",
       "stroke_width": 0.6,
       "fill": null,
-      "closed": false
-    },
-    {
-      "kind": "path",
-      "id": "object_1183",
-      "layer": "06_Aggregation",
-      "group": null,
-      "points": [
-        [
-          218.0,
-          545.5
-        ],
-        [
-          215.34,
-          538.5
-        ],
-        [
-          220.66,
-          538.5
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#121212",
-      "closed": true
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 88.6667,
+        "align": 0
+      }
     },
     {
       "kind": "ellipse",
@@ -21234,7 +21000,7 @@
       ]
     },
     {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_1213",
       "layer": "07_SHAP_and_calibration",
       "group": "calibration",
@@ -21251,31 +21017,13 @@
       "stroke": "#121212",
       "stroke_width": 0.5,
       "fill": null,
-      "closed": false
-    },
-    {
-      "kind": "path",
-      "id": "object_1214",
-      "layer": "07_SHAP_and_calibration",
-      "group": "calibration",
-      "points": [
-        [
-          405.0,
-          546.0
-        ],
-        [
-          411.0,
-          543.72
-        ],
-        [
-          411.0,
-          548.28
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#121212",
-      "closed": true
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 91.2,
+        "align": 0
+      }
     },
     {
       "kind": "text",
@@ -21314,7 +21062,7 @@
       "stroke_width": 0.6
     },
     {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_1217",
       "layer": "07_SHAP_and_calibration",
       "group": "calibration",
@@ -21331,31 +21079,13 @@
       "stroke": "#121212",
       "stroke_width": 0.5,
       "fill": null,
-      "closed": false
-    },
-    {
-      "kind": "path",
-      "id": "object_1218",
-      "layer": "07_SHAP_and_calibration",
-      "group": "calibration",
-      "points": [
-        [
-          371.0,
-          530.0
-        ],
-        [
-          368.72,
-          524.0
-        ],
-        [
-          373.28,
-          524.0
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#121212",
-      "closed": true
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 91.2,
+        "align": 0
+      }
     },
     {
       "kind": "ellipse",
@@ -21371,7 +21101,7 @@
       "stroke_width": 0.6
     },
     {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_1220",
       "layer": "07_SHAP_and_calibration",
       "group": "calibration",
@@ -21388,31 +21118,13 @@
       "stroke": "#121212",
       "stroke_width": 0.5,
       "fill": null,
-      "closed": false
-    },
-    {
-      "kind": "path",
-      "id": "object_1221",
-      "layer": "07_SHAP_and_calibration",
-      "group": "calibration",
-      "points": [
-        [
-          371.0,
-          600.0
-        ],
-        [
-          368.72,
-          594.0
-        ],
-        [
-          373.28,
-          594.0
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#121212",
-      "closed": true
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 91.2,
+        "align": 0
+      }
     },
     {
       "kind": "rect",
@@ -21458,7 +21170,7 @@
       "align": "center"
     },
     {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_1225",
       "layer": "08_GAM",
       "group": "gam_chart",
@@ -21475,34 +21187,16 @@
       "stroke": "#121212",
       "stroke_width": 1.0,
       "fill": null,
-      "closed": false
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 57.0,
+        "align": 0
+      }
     },
     {
-      "kind": "path",
-      "id": "object_1226",
-      "layer": "08_GAM",
-      "group": "gam_chart",
-      "points": [
-        [
-          887.5,
-          616.0
-        ],
-        [
-          880.0,
-          618.85
-        ],
-        [
-          880.0,
-          613.15
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#121212",
-      "closed": true
-    },
-    {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_1227",
       "layer": "08_GAM",
       "group": "gam_chart",
@@ -21519,31 +21213,13 @@
       "stroke": "#121212",
       "stroke_width": 1.0,
       "fill": null,
-      "closed": false
-    },
-    {
-      "kind": "path",
-      "id": "object_1228",
-      "layer": "08_GAM",
-      "group": "gam_chart",
-      "points": [
-        [
-          660.0,
-          472.0
-        ],
-        [
-          662.85,
-          479.5
-        ],
-        [
-          657.15,
-          479.5
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#121212",
-      "closed": true
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 57.0,
+        "align": 0
+      }
     },
     {
       "kind": "path",
@@ -24323,7 +23999,7 @@
       "opacity": 80
     },
     {
-      "kind": "path",
+      "kind": "arrow",
       "id": "object_1258",
       "layer": "08_GAM",
       "group": "gam_calibration_link",
@@ -24436,31 +24112,13 @@
       "stroke": "#1681D2",
       "stroke_width": 1.0,
       "fill": null,
-      "closed": false
-    },
-    {
-      "kind": "path",
-      "id": "object_1259",
-      "layer": "08_GAM",
-      "group": "gam_calibration_link",
-      "points": [
-        [
-          559.5,
-          569.5
-        ],
-        [
-          567.815250096598,
-          565.8203918916511
-        ],
-        [
-          568.1604597561993,
-          572.271161635714
-        ]
-      ],
-      "stroke": null,
-      "stroke_width": 0.0,
-      "fill": "#1681D2",
-      "closed": true
+      "closed": false,
+      "arrowheads": {
+        "start": 0,
+        "end": 7,
+        "end_scale": 64.6,
+        "align": 0
+      }
     },
     {
       "kind": "ellipse",

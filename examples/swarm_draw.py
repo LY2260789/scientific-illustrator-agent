@@ -128,6 +128,7 @@ def render(args, prepared, units, events, ready, cancel, result):
                     report['execution'] = 'direct native primitives, one COM worker, spatial waves, synchronized cursor animation'
                     report['objects'] = report.pop('groups')
                     report['native_gradients'] = sum('gradient' in item for item in scene['items'])
+                    report['native_arrows'] = sum(item['kind'] == 'arrow' for item in scene['items'])
                     report['reference_note'] = scene.get('note', '')
                 else:
                     width, height, expected_paths, expected_texts, bounds = source_info(client, prepared, key)
@@ -181,6 +182,7 @@ def render(args, prepared, units, events, ready, cancel, result):
                     raise RuntimeError('Final source/output path or text counts differ')
                 if args.scene_json:
                     from swarm_primitives import verify_scene
+                    client.execute_jsx('$.global[' + jsx_literal(key) + '].releaseArrows(); "arrow templates released";')
                     verify_scene(client, scene)
                 report['actual_construction_seconds'] = time.perf_counter() - started
                 events.put({'type': 'saving'})
@@ -194,7 +196,7 @@ def render(args, prepared, units, events, ready, cancel, result):
                         return 'closed source';})(KEY);'''.replace('KEY', jsx_literal(key))
                     client.execute_jsx(cleanup, owned_document=False)
                 elif args.scene_json:
-                    client.execute_jsx('delete $.global[' + jsx_literal(key) + ']; "released session";',
+                    client.execute_jsx('(function(key){var state=$.global[key];if(state&&state.releaseArrows)state.releaseArrows();delete $.global[key];return "released session";})(' + jsx_literal(key) + ');',
                                        owned_document=False)
     except Exception as exc:
         logging.exception('Swarm drawing stopped')

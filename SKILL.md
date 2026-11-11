@@ -66,6 +66,13 @@ overlay animates their presentation cursors. Describe the cursor count and COM
 execution accurately when discussing agents or concurrency. The scene and JSX
 renderer are cached once, followed by small index-only drawing commands.
 
+Represent a recognized connector arrow as one semantic `kind: "arrow"` with
+an open path and native `arrowheads` settings. Read the native-arrow schema in
+`docs/swarm_demo.md`. The runtime prepares Illustrator endpoint presets once
+and duplicates complete styled paths during waves. Preserve the arrow as a
+single editable drawing task. Use native `gradient` fills for complete shapes,
+with start/end coordinates defining their direction.
+
 Alignment is automatic on supported Windows Illustrator canvases. Keep the
 view fixed while drawing. `--manual-align` provides drag calibration, and Esc
 cancels between waves. Each run needs a fresh output directory. Inspect

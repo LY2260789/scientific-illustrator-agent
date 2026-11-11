@@ -19,10 +19,14 @@ The source filename is `SOC定量（图表摘要）-v8.png`. Its SHA-256 checksu
 
 ![SOC vector reconstruction](preview.png)
 
-`scene.json` contains 572 primitives, including 60 text blocks and 11 native
-Illustrator gradient fills. Each connecting ribbon is a complete path with
-editable gradient stops. The published
+`scene.json` contains 553 primitives, including 60 text blocks, 11 native
+Illustrator gradient fills and 19 native endpoint arrows. Each connecting ribbon
+is a complete path with editable gradient stops. Each arrow is one open path
+using Illustrator's filled triangular preset 7, with per-arrow scaling chosen
+to approximate the reference. Arrowheads, stroke width and endpoint settings
+remain editable in the Stroke panel. The published
 scene and preview are shared by the project owner as a drawing demonstration.
+The bottom background fades upward from pale blue at the lower edge to white.
 The time-series curves, response curves and decorative textures were visually
 approximated. The example demonstrates geometry reconstruction and editable
 rendering, with scientific labels retained from the reference.
@@ -89,7 +93,7 @@ python examples/swarm_draw.py --scene-json examples/soc_graphical_abstract/scene
 ## Observed run
 
 The tested run used Windows, Python 3.9 and Illustrator 2022 version 26.3.1.
-It produced 512 paths, including 11 verified native gradient fills, and 60
-complete text frames, with zero rendering warnings. Construction took 33.6
-seconds with a 25-second animation setting. Import,
+It produced 493 paths, including 11 verified native gradient fills and 19 native
+endpoint arrows, and 60 complete text frames, with zero rendering warnings.
+Construction took 26.5 seconds with a 15-second animation setting. Import,
 application startup and saving require additional time depending on the machine.

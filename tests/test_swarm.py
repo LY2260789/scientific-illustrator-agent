@@ -148,6 +148,20 @@ class SwarmTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             validate_scene({'width': 100, 'height': 50, 'items': [item]})
 
+    def test_public_arrows_are_atomic_native_paths(self):
+        path = Path(__file__).resolve().parents[1] / 'examples/soc_graphical_abstract/scene.json'
+        scene = json.loads(path.read_text(encoding='utf-8'))
+        validate_scene(scene)
+        arrows = {i for i, item in enumerate(scene['items']) if item['kind'] == 'arrow'}
+        self.assertEqual(len(arrows), 19)
+        indices = [i for wave in plan_primitive_waves(scene, 12)
+                   for job in wave for i in job['indices']]
+        self.assertEqual(sorted(indices), list(range(len(scene['items']))))
+        for index in arrows:
+            self.assertEqual(indices.count(index), 1)
+            self.assertFalse(scene['items'][index].get('closed', False))
+            self.assertEqual(scene['items'][index]['arrowheads']['end'], 7)
+
 
 if __name__ == '__main__':
     unittest.main()

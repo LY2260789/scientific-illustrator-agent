@@ -37,9 +37,9 @@ Illustrator 打开空白画板后，程序根据文档视图和原生画布坐�
 python examples/swarm_draw.py --scene-json "D:/artwork/scene.json" --output-dir outputs/native_01 --cursors 12 --duration 30
 ```
 
-场景支持矩形、圆角矩形、椭圆、路径和可编辑文字。几何数据、文字及绘图函数在启动时一次载入 Illustrator，后续每轮只发送元素编号。结束时统一核对实际对象名称、数量、文字内容及栅格对象数量。
+场景支持矩形、圆角矩形、椭圆、路径、原生端点箭头和可编辑文字。几何数据、文字及绘图函数在启动时一次载入 Illustrator，后续每轮只发送元素编号。结束时统一核对实际对象名称、数量、文字内容及栅格对象数量。
 
-形状上的 `gradient` 字段创建原生线性渐变。渐变起止坐标使用场景坐标，单位为点，纵坐标向下。每条渐变色带作为一个完整路径提交，并核对其原生渐变填充与色标。示例如下。
+形状上的 `gradient` 字段创建原生线性渐变。起止点使用场景坐标，纵坐标向下，两点确定颜色过渡方向，填充覆盖完整形状。每条渐变色带作为一个完整路径提交，并核对其原生渐变填充、方向与色标。底部背景从顶部白色过渡到底边浅蓝。示例如下。
 
 ```json
 {
@@ -56,6 +56,29 @@ python examples/swarm_draw.py --scene-json "D:/artwork/scene.json" --output-dir 
 ```
 
 输出中的 `commands.jsx` 可以通过 `Illustrator.Application.DoJavaScriptFile` 执行，在新文档中重建整幅图。Python 入口同时驱动桌面的光标动画。
+
+### 原生端点箭头
+
+把识别出的整支箭头写成 `kind: "arrow"`。一个绘图任务创建一条带原生箭头外观的开放路径，起终点箭头、比例和线宽均可在 Illustrator 的描边面板继续调整。
+
+```json
+{
+  "id": "connector",
+  "kind": "arrow",
+  "layer": "Connections",
+  "group": null,
+  "points": [[10, 20], [100, 20]],
+  "stroke": "#262B75",
+  "stroke_width": 4,
+  "arrowheads": {"start": 0, "end": 7, "end_scale": 40, "align": 0}
+}
+```
+
+`start` 和 `end` 采用 Illustrator 箭头模板编号，支持 0–39，0 表示该端无箭头。`start_scale` 和 `end_scale` 为正数百分比，默认 100。`align` 为 0 时箭尖对齐路径端点，为 1 时箭尖伸出端点。SOC 案例使用实心三角模板 7，按参考图调整比例。
+
+Illustrator 2022 的脚本 DOM 通过一次性的描边动作设置箭头模板。程序按样式预建原生路径，绘制时复制整条路径，再设置坐标、线宽和颜色，后续 COM 调用仍只发送元素编号。模板图层在导出前清理。
+
+模板名称随 Illustrator 界面语言变化，内置处理中、英、日文前缀。其他语言可在场景顶层设置 `arrowhead_prefix`，填写本机模板名称中数字前的完整前缀及空格。
 
 ## 自定义图形和速度
 

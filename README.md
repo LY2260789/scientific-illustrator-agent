@@ -138,15 +138,18 @@ presentation cursor count, with `--agents` accepted as an alias. The standard
 workflow and progressive SVG commands remain available through their existing
 entry points.
 
-The scene and JSX renderer are loaded once. The SOC case uses 572 objects,
-including 11 native gradient fills. Each colored ribbon is one complete path.
+The scene and JSX renderer are loaded once. The SOC case uses 553 objects,
+including 11 native gradient fills and 19 native endpoint arrows. Each colored
+ribbon is one complete path. Each arrow is an open path with an Illustrator
+arrowhead preset, editable through the Stroke panel.
 Small index-only COM calls draw the spatial batches, followed by full object
 and text verification before saving.
 
-![Editable SOC reconstruction](examples/soc_graphical_abstract/preview.png)
+![Original high-resolution SOC reference](examples/soc_graphical_abstract/reference.png)
 
-The case includes 512 paths and 60 complete editable text blocks. Curves and
-decorative textures are visual approximations. See the [case and replay commands](examples/soc_graphical_abstract/README.md) and [cursor presentation guide](docs/swarm_demo.md).
+The image above is the original reference. The editable reconstruction in the
+case includes 493 paths and 60 complete text blocks. Its curves and decorative
+textures are visual approximations. [Case and replay commands](examples/soc_graphical_abstract/README.md) · [Cursor presentation guide](docs/swarm_demo.md)
 
 The case also includes the original reference PNG at 3180 × 2184 pixels,
 copied byte-for-byte from the supplied source. [Download the original-resolution reference](examples/soc_graphical_abstract/reference.png?raw=true)
@@ -191,10 +194,21 @@ and runtime logs are excluded from this repository.
 .\.venv\Scripts\python.exe -m unittest discover -s tests
 ```
 
-The current suite contains 29 offline tests covering the COM wrapper,
+The current suite contains 30 offline tests and two opt-in desktop regression
+tests. Offline checks cover the COM wrapper,
 specification validation, layout, SVG input validation, cursor planning,
 alignment and cancellation. The complete SOC cursor run was also checked in
 Illustrator 2022, including actual object names, counts and text contents.
+
+Run the opt-in pixel check on an interactive Windows desktop with Illustrator
+available. They verify both vertical gradient directions, a horizontal gradient,
+and native endpoint arrows after saving and reopening an AI document.
+
+```powershell
+$env:ILLUSTRATOR_INTEGRATION = '1'
+python tests/test_gradient_direction_integration.py
+python tests/test_native_arrow_integration.py
+```
 
 ```text
 SKILL.md              Agent workflow and operational guidance
