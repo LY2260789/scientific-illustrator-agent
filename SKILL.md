@@ -1,6 +1,6 @@
 ---
 name: scientific-illustrator-agent
-description: Create editable scientific workflow diagrams in desktop Adobe Illustrator from ideas or simple references through Python and Windows COM. Supports an optional animated multi-cursor presentation when requested.
+description: Create editable scientific diagrams in desktop Adobe Illustrator through Python and Windows COM. Supports sequential element construction and optional multi-cursor swarm presentations when requested.
 ---
 
 # Scientific Illustrator Agent
@@ -26,14 +26,15 @@ Run `python "<skill-directory>/examples/hello_illustrator.py" --connect-only` to
 
 The CLI supports basic nodes, text and arrows, AI saving and PNG export. It does not call a language or vision model itself: the agent interprets the request and creates the spec. Do not claim pixel-exact reconstruction or original numerical data from a screenshot. Complex branched routing, full visual QC, PDF/SVG export and MCP are not implemented in this CLI.
 
-## Optional progressive construction
+## Sequential element construction（逐元素叠加）
 
 Use `examples/progressive_svg.py` for an existing vector SVG, including detailed vector artwork. This is an additional SVG entry point, not automatic bitmap tracing. It starts Illustrator through COM, opens a temporary SVG source, then copies actual graphical groups into a fresh destination document in order. It closes only the temporary source. No selection-dependent operation or raster reveal is used.
 
 Always produce `progressive.ai` and `final.png`. Choose the mode from the user's intent:
 
 - "一步生成", "直接出图": `--mode instant`; no intentional pauses or GIF.
-- "逐步生成", "演示过程": `--mode progressive --duration 30 --batch-size 8 --start-delay 10 --live-only` for a roughly 30-second live construction.
+- "逐元素叠加", "一个个画", "逐个出现": `--mode progressive --batch-size 1 --duration 30 --start-delay 5 --live-only`. Each step adds one top-level SVG graphical unit, which can contain several native paths and a complete text block.
+- "逐步生成", "演示过程": `--mode progressive --duration 30 --batch-size 8 --start-delay 10 --live-only` for batched live construction.
 - If a replay GIF is requested, omit `--live-only`; output includes `build.gif` and actual exported PNG frames.
 - For an explicit per-group speed instead of a target duration, use `--delay-ms 80` or `--speed 快速|正常|慢速`. Never combine `--duration` with `--delay-ms`.
 
@@ -47,7 +48,7 @@ Use absolute paths when invoking from another directory. Select a fresh output d
 
 The importer accepts a restricted vector/text SVG subset. It rejects images, external resources, scripts, filters and CSS. See `docs/progressive_svg.md` for parameters and requirements. Other SVG features may require a separate conversion step. Private research examples are not part of this skill.
 
-## Optional multi-cursor presentation
+## Optional multi-cursor swarm presentation（多鼠标集群）
 
 Use `examples/swarm_draw.py` when the user requests a mouse swarm, multiple
 animated cursors, a group drawing presentation or a screen recording of that

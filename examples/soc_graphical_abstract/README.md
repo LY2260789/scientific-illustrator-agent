@@ -4,6 +4,19 @@ This example rebuilds a reference graphical abstract from editable rectangles,
 ellipses, paths and complete text blocks. The reference combines meteorological
 normalization, random forest diagrams, SHAP calibration and a GAM panel.
 
+## Original reference
+
+![Original SOC reference](reference.png)
+
+The reference PNG is 3180 × 2184 pixels and 1,028,017 bytes. It is copied
+byte-for-byte from the source supplied by the project owner. The file checksum
+is recorded below. [Download the original-resolution PNG](reference.png?raw=true)
+
+The source filename is `SOC定量（图表摘要）-v8.png`. Its SHA-256 checksum is
+`06fa5a54016a4d0ce0c2c306f51adb2aebd8271c8f077e1c9e840e4f11acca4e`.
+
+## Editable reconstruction
+
 ![SOC vector reconstruction](preview.png)
 
 `scene.json` contains 572 primitives, including 60 text blocks and 11 native
@@ -13,6 +26,11 @@ scene and preview are shared by the project owner as a drawing demonstration.
 The time-series curves, response curves and decorative textures were visually
 approximated. The example demonstrates geometry reconstruction and editable
 rendering, with scientific labels retained from the reference.
+
+The Skill offers sequential element construction and an optional multi-cursor
+swarm presentation. Sequential construction adds SVG graphical units in order,
+with speed controls and optional GIF replay. The command below uses the native
+SOC primitive scene for the multi-cursor presentation. [Sequential construction guide](../../docs/progressive_svg.md)
 
 ## Run the multi-cursor effect
 

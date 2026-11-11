@@ -1,6 +1,17 @@
-# Progressive vector construction in Illustrator
+# Sequential element construction（逐元素叠加）
 
-`examples/progressive_svg.py` reconstructs an existing vector SVG into a fresh Illustrator document, optionally showing the process. This is a general entry point and does not depend on any private research example.
+`examples/progressive_svg.py` builds an editable SVG figure in a fresh Illustrator
+document, adding graphical units in their source order. Each step adds real
+vector paths and text to the growing figure. `--batch-size 1` shows one unit at a
+time, and larger batches control how many units appear at each refresh.
+
+A unit is a top-level SVG shape or group. A group may contain several paths and
+a complete text block. A gradient-filled ribbon should be represented as one
+complete path so that it appears together with its native gradient.
+
+The optional multi-cursor mode advances spatial regions in batches while colored
+cursors follow their elements. Its entry point and controls are described in the
+cursor guide. [Multi-cursor swarm presentation](swarm_demo.md)
 
 ## Live demonstration, approximately 30 seconds
 

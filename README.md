@@ -4,7 +4,7 @@
 
 Scientific Illustrator Agent connects AI agents to desktop Adobe Illustrator through Python, Windows COM and ExtendScript. An agent interprets a drawing request or reference image, creates a validated FigureSpec, and renders native vector objects with editable text.
 
-**Status: experimental v0.3 — installable CLI Skill.** Includes optional progressive SVG construction, direct generation, speed presets, GIF replay and a multi-cursor presentation effect. The core renderer and the SOC cursor presentation have been exercised on Illustrator 2022.
+**Status: experimental v0.3 — installable CLI Skill.** Includes sequential element construction, optional multi-cursor swarm presentations, direct generation, speed presets and GIF replay. The core renderer and the SOC cursor presentation have been exercised on Illustrator 2022.
 
 ## Capabilities
 
@@ -16,8 +16,8 @@ Scientific Illustrator Agent connects AI agents to desktop Adobe Illustrator thr
 | Text integrity | One text block per label, including multiline labels; contents checked after rendering |
 | Object identification | Named objects and an exported registry |
 | Deliverables | Native AI document, PNG preview, specification and rendering trace |
-| Incremental construction | Generic SVG-to-Illustrator CLI; staged or instant output, target duration, optional GIF |
-| Optional cursor presentation | 2–30 animated cursors synchronized with spatial batches of real vector objects |
+| Sequential element construction（逐元素叠加） | Add editable SVG graphical units in order, with adjustable pacing and optional GIF replay |
+| Multi-cursor swarm presentation（多鼠标集群，可选） | 2–30 colored cursors accompany spatial batches of real vector objects |
 | MCP, PDF/SVG export, automated visual QC | Planned |
 
 The Python CLI does not contain a language model or an OCR service. Image interpretation and specification authoring are performed by the host agent. Complex illustration reconstruction and recovery of original chart data are outside the current FigureSpec renderer's scope.
@@ -107,7 +107,23 @@ Example requests for an agent with this Skill installed:
 
 The agent should read the schema, write and validate a FigureSpec, render it, and inspect the PNG preview. See [input modes](docs/input_modes.md), [the schema](src/models/figure_spec.py), and [example specifications](examples/specs).
 
-### Optional multi-cursor presentation
+### Sequential element construction（逐元素叠加）
+
+Watch an editable figure build up in the source order. Illustrator adds a real
+graphical unit at each step. A unit is one top-level SVG shape or group and may
+contain several paths and a complete text block. `--batch-size 1` refreshes after
+each unit. Larger batches add several units at each refresh.
+
+```powershell
+.\.venv\Scripts\python.exe examples/progressive_svg.py --source-svg examples/specs/progressive_demo.svg --output-dir outputs/sequential_01 --mode progressive --batch-size 1 --duration 30 --start-delay 5 --live-only
+```
+
+The command saves `progressive.ai` and `final.png`. Omit `--live-only` to also
+export intermediate PNG frames and a `build.gif` replay. Whole gradient-filled
+paths stay together as graphical units. Timing and supported SVG features are
+described in the progressive construction guide. [Sequential drawing options](docs/progressive_svg.md)
+
+### Multi-cursor swarm presentation（多鼠标集群，可选）
 
 Open and maximize Illustrator, then run the public SOC reconstruction example.
 
@@ -131,6 +147,9 @@ and text verification before saving.
 
 The case includes 512 paths and 60 complete editable text blocks. Curves and
 decorative textures are visual approximations. See the [case and replay commands](examples/soc_graphical_abstract/README.md) and [cursor presentation guide](docs/swarm_demo.md).
+
+The case also includes the original reference PNG at 3180 × 2184 pixels,
+copied byte-for-byte from the supplied source. [Download the original-resolution reference](examples/soc_graphical_abstract/reference.png?raw=true)
 
 ### Execute generated commands through COM
 
