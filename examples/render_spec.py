@@ -21,6 +21,7 @@ def main() -> int:
     parser.add_argument("spec", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--validate-only", action="store_true")
+    parser.add_argument("--mac", action="store_true", help="Use the experimental macOS AppleScript bridge")
     parser.add_argument("--debug", action="store_true")
     args = parser.parse_args()
     (ROOT / "logs").mkdir(exist_ok=True)
@@ -35,7 +36,7 @@ def main() -> int:
             print(f"Valid: mode={spec.mode}; canvas={scene['width']} x {scene['height']} pt")
             return 0
         output = args.output or ROOT / "outputs" / f"{args.spec.stem}_{datetime.now():%Y%m%d_%H%M%S_%f}.ai"
-        print(render_figure_spec(spec, output), flush=True)
+        print(render_figure_spec(spec, output, mac=args.mac), flush=True)
         return 0
     except Exception:
         logging.exception("Figure render failed")

@@ -7,7 +7,8 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from illustrator.com_client import IllustratorClient, IllustratorError, jsx_literal
+from illustrator import IllustratorError, desktop_client
+from illustrator.com_client import jsx_literal
 from illustrator.jsx_builder import JSXBuilder
 from layout.base import compute_layout
 from models.figure_spec import FigureSpec
@@ -15,7 +16,7 @@ from models.figure_spec import FigureSpec
 LOGGER = logging.getLogger(__name__)
 
 
-def render_figure_spec(spec: FigureSpec, output: Path) -> dict[str, Any]:
+def render_figure_spec(spec: FigureSpec, output: Path, *, mac: bool = False) -> dict[str, Any]:
     """Preflight, render to a fresh document, save AI, PNG, spec and object names.
 
     Failures leave only the new document/partial outputs for inspection. There is
@@ -36,7 +37,7 @@ def render_figure_spec(spec: FigureSpec, output: Path) -> dict[str, Any]:
     with paths["spec"].open("x", encoding="utf-8") as stream:
         stream.write(spec.json(ensure_ascii=False, indent=2))
     LOGGER.info("Render FigureSpec mode=%s nodes=%d edges=%d spec=%s", spec.mode, len(spec.nodes), len(spec.edges), paths["spec"])
-    with IllustratorClient() as client:
+    with desktop_client(mac=mac) as client:
         client.create_document(scene["width"], scene["height"])
         result = client.execute_jsx(JSXBuilder.render_scene(scene))
         if not result.startswith("OK|"):

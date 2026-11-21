@@ -1,17 +1,19 @@
 ---
 name: scientific-illustrator-agent
-description: Create editable scientific diagrams in desktop Adobe Illustrator through Python and Windows COM. Supports sequential element construction and optional multi-cursor swarm presentations when requested.
+description: Create editable scientific diagrams in desktop Adobe Illustrator through Python and Windows COM or the experimental macOS FigureSpec option. Use for scientific figures and, on Windows, sequential element construction and optional multi-cursor swarm presentations.
 ---
 
 # Scientific Illustrator Agent
 
-This skill bundles the Python engine beside this file. Resolve all relative paths below against this skill directory, not the user's working directory. Windows and locally installed Illustrator are required. Illustrator 2022 was tested; 2020 compatibility is intended but not verified. This is a CLI skill, not an MCP server.
+This skill bundles the Python engine beside this file. Resolve all relative paths below against this skill directory, not the user's working directory. Use a local desktop installation of Illustrator. Illustrator 2022 was tested on Windows; 2020 compatibility is intended but not verified. macOS FigureSpec rendering is experimental and has not been verified on a Mac. This is a CLI skill, not an MCP server.
 
 ## Prepare
 
-Use an available Windows Python 3.9+ with pywin32, Pydantic and Pillow. If dependencies are missing, create a local virtual environment and install `requirements.txt`; do not replace the user's global Python packages. See `README.md` for installation and COM troubleshooting.
+Use Python 3.9+ with Pydantic and Pillow, plus pywin32 on Windows. If dependencies are missing, create a local virtual environment and install `requirements.txt`; do not replace the user's global Python packages. See `README.md` for installation and troubleshooting.
 
 Run `python "<skill-directory>/examples/hello_illustrator.py" --connect-only` to check Illustrator. COM Dispatch can start Illustrator automatically. This does not guarantee the window is foreground. Never terminate Illustrator or repeatedly retry a failed mutation.
+
+On macOS, open Illustrator in the desktop session and add `--mac` to the connection check and the FigureSpec render command. Allow the calling terminal or application to control Illustrator if macOS prompts for Automation access.
 
 ## Draw
 
@@ -27,6 +29,8 @@ Run `python "<skill-directory>/examples/hello_illustrator.py" --connect-only` to
 The CLI supports basic nodes, text and arrows, AI saving and PNG export. It does not call a language or vision model itself: the agent interprets the request and creates the spec. Do not claim pixel-exact reconstruction or original numerical data from a screenshot. Complex branched routing, full visual QC, PDF/SVG export and MCP are not implemented in this CLI.
 
 ## Sequential element construction（逐元素叠加）
+
+This SVG entry point uses Windows COM.
 
 Use `examples/progressive_svg.py` for an existing vector SVG, including detailed vector artwork. This is an additional SVG entry point, not automatic bitmap tracing. It starts Illustrator through COM, opens a temporary SVG source, then copies actual graphical groups into a fresh destination document in order. It closes only the temporary source. No selection-dependent operation or raster reveal is used.
 
@@ -49,6 +53,8 @@ Use absolute paths when invoking from another directory. Select a fresh output d
 The importer accepts a restricted vector/text SVG subset. It rejects images, external resources, scripts, filters and CSS. See `docs/progressive_svg.md` for parameters and requirements. Other SVG features may require a separate conversion step. Private research examples are not part of this skill.
 
 ## Optional multi-cursor swarm presentation（多鼠标集群）
+
+This presentation runs on Windows.
 
 Use `examples/swarm_draw.py` when the user requests a mouse swarm, multiple
 animated cursors, a group drawing presentation or a screen recording of that

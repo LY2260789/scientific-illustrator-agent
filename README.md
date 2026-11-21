@@ -6,6 +6,8 @@ Scientific Illustrator Agent connects AI agents to desktop Adobe Illustrator thr
 
 **Status: experimental v0.3 — installable CLI Skill.** Includes sequential element construction, optional multi-cursor swarm presentations, direct generation, speed presets and GIF replay. The core renderer and the SOC cursor presentation have been exercised on Illustrator 2022.
 
+**macOS preview:** Add `--mac` for FigureSpec rendering through AppleScript. See the [macOS test instructions](#macos-preview) for setup and feedback.
+
 ## Capabilities
 
 | Capability | Current support |
@@ -30,7 +32,7 @@ flowchart TD
     B --> C[FigureSpec JSON]
     C --> D[Pydantic validation + layout]
     D --> E[Python renderer]
-    E --> F[Windows COM]
+    E --> F["Windows COM or macOS AppleScript"]
     F --> G[ExtendScript]
     G --> H[Adobe Illustrator: editable vectors and text]
     H --> I[AI document + PNG preview]
@@ -40,9 +42,9 @@ The intermediate specification keeps automatic workflow placement in the layout 
 
 ## Requirements
 
-- Windows 10/11 with an interactive desktop session.
+- An interactive Windows 10/11 desktop for the default COM bridge, or a macOS desktop for the preview.
 - A licensed, locally installed Adobe Illustrator, with initial setup completed.
-- Python 3.9 or later, pywin32, Pydantic and Pillow.
+- Python 3.9 or later, Pydantic and Pillow, plus pywin32 on Windows.
 - An AI agent capable of reading this Skill and running local Python commands, when using natural-language input.
 
 **Verified environment:** Illustrator 2022 (26.3.1), Python 3.9.13. Compatibility with Illustrator 2020 is a design target, not a tested guarantee. This project does not depend on Adobe's newer MCP integrations.
@@ -66,7 +68,35 @@ In Codex, ask:
 
 > Install the Skill from https://github.com/LY2260789/scientific-illustrator-agent, using the repository root as the skill directory.
 
-For manual installation, place the repository contents in `~/.codex/skills/scientific-illustrator-agent/`, then install the Python dependencies there. Other agents need a compatible Skill loader and permission to execute local commands. The package provides a CLI Skill with local COM execution.
+For manual installation, place the repository contents in `~/.codex/skills/scientific-illustrator-agent/`, then install the Python dependencies there. Other agents need a compatible Skill loader and permission to execute local commands.
+
+## macOS preview
+
+This branch adds an experimental macOS option for direct FigureSpec rendering. It
+has not yet been tested with Illustrator on a Mac. Sequential SVG construction and
+the multi-cursor presentation use Windows COM.
+
+Install Python 3.9+ and open desktop Illustrator on the Mac. In Terminal, run:
+
+```sh
+git clone --branch macos-preview --single-branch https://github.com/LY2260789/scientific-illustrator-agent.git scientific-illustrator-agent-macos
+cd scientific-illustrator-agent-macos
+python3 -m venv .venv
+./.venv/bin/python -m pip install -r requirements.txt
+./.venv/bin/python examples/hello_illustrator.py --connect-only --mac
+./.venv/bin/python examples/render_spec.py examples/specs/pm25_workflow.json --output "outputs/Mac 试画.ai" --mac
+```
+
+If macOS asks for permission to control Illustrator, allow it. If the connection
+fails with error `-1743`, check **System Settings → Privacy & Security → Automation**
+for Terminal or the application running the command, then rerun the connection check.
+Use a fresh output filename for each drawing.
+
+Check that the `.ai` file opens, its text is editable, and the PNG preview looks
+right. Report your macOS and Illustrator versions, Mac chip (Apple silicon or
+Intel), and whether the connection and drawing commands worked. If either fails,
+include the first relevant error line. If a font is unavailable, use an installed
+font with the required glyphs in the FigureSpec.
 
 ## Quick start
 
@@ -194,8 +224,8 @@ and runtime logs are excluded from this repository.
 .\.venv\Scripts\python.exe -m unittest discover -s tests
 ```
 
-The current suite contains 30 offline tests and two opt-in desktop regression
-tests. Offline checks cover the COM wrapper,
+The suite includes two opt-in Windows desktop regression tests.
+Offline checks cover the COM wrapper, AppleScript bridge,
 specification validation, layout, SVG input validation, cursor planning,
 alignment and cancellation. The complete SOC cursor run was also checked in
 Illustrator 2022, including actual object names, counts and text contents.
@@ -212,7 +242,7 @@ python tests/test_native_arrow_integration.py
 
 ```text
 SKILL.md              Agent workflow and operational guidance
-src/illustrator/      COM bridge, JSX builder and drawing scripts
+src/illustrator/      Desktop bridges, JSX builder and drawing scripts
 src/models/           FigureSpec validation
 src/layout/           Layout computation
 src/renderer/         Document rendering and output verification

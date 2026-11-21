@@ -13,7 +13,7 @@ import sys
 import threading
 import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 LOGGER = logging.getLogger(__name__)
 
@@ -25,6 +25,32 @@ class IllustratorError(RuntimeError):
 def jsx_literal(value: Any) -> str:
     """Encode data as ES3-compatible literals, including Unicode and paths."""
     return json.dumps(value, ensure_ascii=True, allow_nan=False)
+
+
+def create_document_jsx(width: float, height: float) -> str:
+    """Build an RGB document expression after validating point dimensions."""
+    if not all(math.isfinite(v) and 1 <= v <= 16383 for v in (width, height)):
+        raise ValueError("Document dimensions must be finite and between 1 and 16383 pt")
+    return f"app.documents.add(DocumentColorSpace.RGB, {jsx_literal(width)}, {jsx_literal(height)})"
+
+
+def save_new_document(path: Path, execute_jsx: Callable[[str], str]) -> Path:
+    """Run the shared save operation in the bridge's owned document."""
+    destination = Path(path).expanduser().resolve()
+    if destination.suffix.lower() != ".ai":
+        raise ValueError("Save destination must have an .ai extension")
+    if destination.exists():
+        raise FileExistsError(f"Refusing to overwrite: {destination}")
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    execute_jsx(
+        "(function () { var target = new File(" + jsx_literal(destination.as_posix()) + ");"
+        "if (target.exists) throw new Error('Destination already exists');"
+        "var options = new IllustratorSaveOptions(); options.pdfCompatible = true;"
+        "app.activeDocument.saveAs(target, options); return target.fsName; }());"
+    )
+    if not destination.is_file() or destination.stat().st_size == 0:
+        raise IllustratorError(f"saveAs returned but output is absent/empty: {destination}")
+    return destination
 
 
 def describe_com_error(exc: Exception) -> str:
@@ -134,10 +160,8 @@ class IllustratorClient:
 
     def create_document(self, width: float = 520, height: float = 300) -> Any:
         """Create a fresh RGB document in points and retain its COM reference."""
-        if not all(math.isfinite(v) and 1 <= v <= 16383 for v in (width, height)):
-            raise ValueError("Document dimensions must be finite and between 1 and 16383 pt")
         self.execute_jsx(
-            f"app.documents.add(DocumentColorSpace.RGB, {jsx_literal(width)}, {jsx_literal(height)}); app.activeDocument.name;",
+            create_document_jsx(width, height) + "; app.activeDocument.name;",
             owned_document=False,
         )
         try:
@@ -156,21 +180,7 @@ class IllustratorClient:
 
     def save_document(self, path: Path) -> Path:
         """Save owned artwork to a new .ai path; refuse existing destinations."""
-        destination = Path(path).expanduser().resolve()
-        if destination.suffix.lower() != ".ai":
-            raise ValueError("Save destination must have an .ai extension")
-        if destination.exists():
-            raise FileExistsError(f"Refusing to overwrite: {destination}")
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        self.execute_jsx(
-            "(function () { var target = new File(" + jsx_literal(destination.as_posix()) + ");"
-            "if (target.exists) throw new Error('Destination already exists');"
-            "var options = new IllustratorSaveOptions(); options.pdfCompatible = true;"
-            "app.activeDocument.saveAs(target, options); return target.fsName; }());"
-        )
-        if not destination.is_file() or destination.stat().st_size == 0:
-            raise IllustratorError(f"saveAs returned but output is absent/empty: {destination}")
-        return destination
+        return save_new_document(path, self.execute_jsx)
 
     def health_check(self) -> dict[str, Any]:
         """Check version and read-only scripting connectivity."""

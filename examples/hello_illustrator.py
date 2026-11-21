@@ -1,4 +1,4 @@
-"""Run milestones 1-2 on a Windows desktop with local Illustrator installed."""
+"""Check the bridge on a desktop with local Illustrator installed."""
 
 from __future__ import annotations
 
@@ -12,13 +12,14 @@ from typing import Optional, Sequence
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
-from illustrator.com_client import IllustratorClient  # noqa: E402
+from illustrator import desktop_client  # noqa: E402
 
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     """Connect, create fresh editable artwork, verify objects, then save AI."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--connect-only", action="store_true", help="Read version and probe JSX without creating artwork")
+    parser.add_argument("--mac", action="store_true", help="Use the experimental macOS AppleScript bridge")
     parser.add_argument("--output", type=Path, help="New .ai file; existing files are never overwritten")
     parser.add_argument("--debug", action="store_true", help="Include generated JSX in local logs")
     args = parser.parse_args(argv)
@@ -36,7 +37,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 raise ValueError("--output must end in .ai")
             if output.exists():
                 raise FileExistsError(f"Refusing to overwrite: {output}")
-        with IllustratorClient() as client:
+        with desktop_client(mac=args.mac) as client:
             print(f"Illustrator version: {client.get_version()}", flush=True)
             print(f"JSX version: {client.health_check()['jsx_version']}", flush=True)
             if args.connect_only:
