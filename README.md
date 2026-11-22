@@ -145,9 +145,9 @@ arrowhead preset, editable through the Stroke panel.
 Small index-only COM calls draw the spatial batches, followed by full object
 and text verification before saving.
 
-![Original high-resolution SOC reference](examples/soc_graphical_abstract/reference.png)
+https://github.com/user-attachments/assets/ee5a36a9-d238-44db-8cca-ce4f40893d63
 
-The image above is the original reference. The editable reconstruction in the
+The video shows the multi-cursor drawing process in Illustrator. The editable reconstruction in the
 case includes 493 paths and 60 complete text blocks. Its curves and decorative
 textures are visual approximations. [Case and replay commands](examples/soc_graphical_abstract/README.md) · [Cursor presentation guide](docs/swarm_demo.md)
 
